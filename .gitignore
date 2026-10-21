@@ -24,6 +24,8 @@ Thumbs.db
 
 # Local market data and generated analysis
 backend/data/raw/
-backend/data/processed/
+# Keep processed CSV files available for deployment
+!backend/data/processed/
+!backend/data/processed/*.csv
 backend/venv/
 backend/.env

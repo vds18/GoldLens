@@ -1,0 +1,5 @@
+Symbol,Rows,TradingDates,Expiries,MissingDate,MissingExpiry,MissingClose,NonPositiveClose,MissingNormalizedPrice,NonPositiveNormalizedPrice,DuplicateKeyRows,MinNormalizedPrice,MaxNormalizedPrice,AvgNormalizedPrice
+GOLDGUINEA,204,34,7,0,0,0,0,0,0,0,145985.0,162897.5,154464.0
+GOLDM,204,34,8,0,0,0,0,0,0,0,145277.69,160794.82,153549.5
+GOLDPETAL,204,34,7,0,0,0,0,0,0,0,145910.0,162400.0,154322.21
+GOLDTEN,204,34,7,0,0,0,0,0,0,0,145062.0,161661.0,153597.38

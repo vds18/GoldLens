@@ -1,0 +1,13 @@
+Metric,Value
+Input rows,816
+Unique trading dates,34
+First trading date,2026-09-01
+Last trading date,2026-10-19
+Symbols found,4
+Missing target symbols,None
+Invalid dates,0
+Invalid expiries,0
+Missing close prices,0
+Non-positive close prices,0
+Missing normalized prices,0
+Duplicate date-symbol-expiry rows,0
