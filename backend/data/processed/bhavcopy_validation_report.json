@@ -1,0 +1,225 @@
+{
+  "files_found": 34,
+  "files_read": 34,
+  "combined_rows": 530576,
+  "exact_duplicate_rows_removed": 0,
+  "valid_trading_dates": [
+    "2026-09-01",
+    "2026-09-02",
+    "2026-09-03",
+    "2026-09-04",
+    "2026-09-07",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10",
+    "2026-09-11",
+    "2026-09-14",
+    "2026-09-15",
+    "2026-09-16",
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-05",
+    "2026-10-06",
+    "2026-10-07",
+    "2026-10-08",
+    "2026-10-09",
+    "2026-10-12",
+    "2026-10-13",
+    "2026-10-14",
+    "2026-10-15",
+    "2026-10-16",
+    "2026-10-19"
+  ],
+  "unique_trading_dates": 34,
+  "target_symbols_found": [
+    "GOLDGUINEA",
+    "GOLDM",
+    "GOLDPETAL",
+    "GOLDTEN"
+  ],
+  "target_gold_rows": 24134,
+  "missing_target_symbols": [],
+  "rows_missing_date": 0,
+  "rows_missing_close": 0,
+  "files": [
+    {
+      "file": "BhavCopyDateWise_01092026.csv",
+      "status": "READ",
+      "rows": 15335
+    },
+    {
+      "file": "BhavCopyDateWise_01102026.csv",
+      "status": "READ",
+      "rows": 15104
+    },
+    {
+      "file": "BhavCopyDateWise_02092026.csv",
+      "status": "READ",
+      "rows": 15373
+    },
+    {
+      "file": "BhavCopyDateWise_03092026.csv",
+      "status": "READ",
+      "rows": 15375
+    },
+    {
+      "file": "BhavCopyDateWise_04092026.csv",
+      "status": "READ",
+      "rows": 15381
+    },
+    {
+      "file": "BhavCopyDateWise_05102026.csv",
+      "status": "READ",
+      "rows": 15118
+    },
+    {
+      "file": "BhavCopyDateWise_06102026.csv",
+      "status": "READ",
+      "rows": 15319
+    },
+    {
+      "file": "BhavCopyDateWise_07092026.csv",
+      "status": "READ",
+      "rows": 15586
+    },
+    {
+      "file": "BhavCopyDateWise_07102026.csv",
+      "status": "READ",
+      "rows": 15323
+    },
+    {
+      "file": "BhavCopyDateWise_08092026.csv",
+      "status": "READ",
+      "rows": 15614
+    },
+    {
+      "file": "BhavCopyDateWise_08102026.csv",
+      "status": "READ",
+      "rows": 15339
+    },
+    {
+      "file": "BhavCopyDateWise_09092026.csv",
+      "status": "READ",
+      "rows": 15634
+    },
+    {
+      "file": "BhavCopyDateWise_09102026.csv",
+      "status": "READ",
+      "rows": 15369
+    },
+    {
+      "file": "BhavCopyDateWise_10092026.csv",
+      "status": "READ",
+      "rows": 15734
+    },
+    {
+      "file": "BhavCopyDateWise_11092026.csv",
+      "status": "READ",
+      "rows": 15864
+    },
+    {
+      "file": "BhavCopyDateWise_12102026.csv",
+      "status": "READ",
+      "rows": 15384
+    },
+    {
+      "file": "BhavCopyDateWise_13102026.csv",
+      "status": "READ",
+      "rows": 15392
+    },
+    {
+      "file": "BhavCopyDateWise_14092026.csv",
+      "status": "READ",
+      "rows": 15864
+    },
+    {
+      "file": "BhavCopyDateWise_14102026.csv",
+      "status": "READ",
+      "rows": 15440
+    },
+    {
+      "file": "BhavCopyDateWise_15092026.csv",
+      "status": "READ",
+      "rows": 15887
+    },
+    {
+      "file": "BhavCopyDateWise_15102026.csv",
+      "status": "READ",
+      "rows": 15935
+    },
+    {
+      "file": "BhavCopyDateWise_16092026.csv",
+      "status": "READ",
+      "rows": 16645
+    },
+    {
+      "file": "BhavCopyDateWise_16102026.csv",
+      "status": "READ",
+      "rows": 15535
+    },
+    {
+      "file": "BhavCopyDateWise_17092026.csv",
+      "status": "READ",
+      "rows": 16696
+    },
+    {
+      "file": "BhavCopyDateWise_18092026.csv",
+      "status": "READ",
+      "rows": 15828
+    },
+    {
+      "file": "BhavCopyDateWise_19102026.csv",
+      "status": "READ",
+      "rows": 15601
+    },
+    {
+      "file": "BhavCopyDateWise_21092026.csv",
+      "status": "READ",
+      "rows": 15865
+    },
+    {
+      "file": "BhavCopyDateWise_22092026.csv",
+      "status": "READ",
+      "rows": 16475
+    },
+    {
+      "file": "BhavCopyDateWise_23092026.csv",
+      "status": "READ",
+      "rows": 16487
+    },
+    {
+      "file": "BhavCopyDateWise_24092026.csv",
+      "status": "READ",
+      "rows": 15948
+    },
+    {
+      "file": "BhavCopyDateWise_25092026.csv",
+      "status": "READ",
+      "rows": 15292
+    },
+    {
+      "file": "BhavCopyDateWise_28092026.csv",
+      "status": "READ",
+      "rows": 14893
+    },
+    {
+      "file": "BhavCopyDateWise_29092026.csv",
+      "status": "READ",
+      "rows": 14961
+    },
+    {
+      "file": "BhavCopyDateWise_30092026 (1).csv",
+      "status": "READ",
+      "rows": 14980
+    }
+  ]
+}
