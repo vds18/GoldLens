@@ -5,6 +5,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+import numpy as np
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data" / "processed"
@@ -399,10 +400,20 @@ if df.empty:
 
 symbols = sorted(df["Symbol"].unique())
 
+
 selected_symbols = st.sidebar.multiselect(
     "CONTRACTS",
     options=symbols,
     default=symbols,
+    help=(
+        "Choose one or more MCX gold contracts. "
+        "Your selection updates the dashboard's charts and analysis."
+    ),
+    placeholder="Select contracts to compare...",
+)
+
+st.sidebar.caption(
+    f"{len(selected_symbols)} of {len(symbols)} contracts selected"
 )
 
 view = df[df["Symbol"].isin(selected_symbols)].copy()
@@ -447,13 +458,30 @@ st.sidebar.divider()
 st.sidebar.caption("GoldLens • Research prototype")
 
 
+
 # ---------- Header ----------
 st.markdown("""
 <div class="hero">
     <div class="eyebrow">MCX · BULLION MARKETS · RESEARCH TERMINAL</div>
-    <div class="hero-title">GoldLens <span style="color:#E7BD68;">◈</span></div>
+    <div class="hero-title">
+        GoldLens <span style="color:#E7BD68;">◈</span>
+    </div>
     <div class="hero-subtitle">
-        Contract intelligence. Relative value. Expiry-aware market analysis.
+        One market. Multiple contracts. A clearer view of relative value.
+        <br><br>
+        GoldLens turns MCX gold-futures data into an auditable research
+        workflow — from purity-adjusted prices and contract expiry to
+        spread anomalies and preliminary strategy evaluation.
+    </div>
+    <div style="
+        display:flex; flex-wrap:wrap; gap:10px; margin-top:22px;
+        color:#CBD5E1; font-size:0.82rem;">
+        <span style="border:1px solid #344155; padding:7px 11px;
+        border-radius:7px;">01 · Contract intelligence</span>
+        <span style="border:1px solid #344155; padding:7px 11px;
+        border-radius:7px;">02 · Relative value</span>
+        <span style="border:1px solid #344155; padding:7px 11px;
+        border-radius:7px;">03 · Research validation</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -608,6 +636,7 @@ st.dataframe(
     },
 )
 
+
 # ---------- Data Quality & Validation ----------
 st.markdown(
     '<div class="section-label">03 / DATA INTEGRITY</div>',
@@ -615,78 +644,162 @@ st.markdown(
 )
 st.header("Data quality & validation")
 st.caption(
-    "A transparent audit of historical coverage, missing values, "
-    "and contract-level data quality."
+    "Transparent checks of historical coverage, data freshness, "
+    "missing values, duplicate records, and contract-level consistency."
 )
 
-quality_history = pd.read_csv(HISTORY_FILE) if HISTORY_FILE.exists() else pd.DataFrame()
-quality_report = pd.read_csv(QUALITY_FILE) if QUALITY_FILE.exists() else pd.DataFrame()
+quality_history = (
+    pd.read_csv(HISTORY_FILE)
+    if HISTORY_FILE.exists()
+    else pd.DataFrame()
+)
+quality_report = (
+    pd.read_csv(QUALITY_FILE)
+    if QUALITY_FILE.exists()
+    else pd.DataFrame()
+)
 
 if not quality_history.empty:
-    quality_history["Date"] = pd.to_datetime(
-        quality_history["Date"], errors="coerce"
-    )
+    required_columns = ["Date", "Symbol", "Expiry Date", "Close"]
+    missing_columns = [
+        col for col in required_columns
+        if col not in quality_history.columns
+    ]
 
-    history_dates_quality = quality_history["Date"].nunique()
-    history_rows_quality = len(quality_history)
-
-    duplicate_count = (
-        quality_history.duplicated(
-            subset=["Date", "Symbol", "Expiry Date"]
-        ).sum()
-        if all(c in quality_history.columns for c in ["Date", "Symbol", "Expiry Date"])
-        else None
-    )
-
-    missing_closes = (
-        pd.to_numeric(quality_history["Close"], errors="coerce").isna().sum()
-        if "Close" in quality_history.columns
-        else None
-    )
-
-    q1, q2, q3, q4 = st.columns(4)
-
-    q1.metric("Historical rows", f"{history_rows_quality:,}")
-    q2.metric("Trading dates", history_dates_quality)
-    q3.metric(
-        "Missing closes",
-        "N/A" if missing_closes is None else f"{missing_closes:,}",
-    )
-    q4.metric(
-        "Duplicate records",
-        "N/A" if duplicate_count is None else f"{duplicate_count:,}",
-    )
-
-    if history_dates_quality < 30:
-        st.warning(
-            f"Research limitation: {history_dates_quality} trading dates "
-            "are available. This is enough to test the data pipeline, "
-            "but not to establish reliable strategy performance."
+    if missing_columns:
+        st.error(
+            "The historical dataset is missing required columns: "
+            + ", ".join(missing_columns)
+        )
+    else:
+        quality_history["Date"] = pd.to_datetime(
+            quality_history["Date"], errors="coerce"
+        )
+        quality_history["Expiry Date"] = pd.to_datetime(
+            quality_history["Expiry Date"], errors="coerce"
+        )
+        quality_history["Close"] = pd.to_numeric(
+            quality_history["Close"], errors="coerce"
         )
 
-    if duplicate_count == 0 and missing_closes == 0:
-        st.success(
-            "Basic checks passed: no duplicate date-symbol-expiry records "
-            "or missing closing prices were detected."
+        invalid_dates = int(quality_history["Date"].isna().sum())
+        invalid_expiries = int(
+            quality_history["Expiry Date"].isna().sum()
+        )
+        missing_closes = int(quality_history["Close"].isna().sum())
+        nonpositive_closes = int(
+            (quality_history["Close"].notna()
+             & (quality_history["Close"] <= 0)).sum()
         )
 
-    st.markdown("#### Contract coverage")
-
-    coverage = (
-        quality_history.groupby("Symbol")
-        .agg(
-            Rows=("Symbol", "size"),
-            TradingDates=("Date", "nunique"),
+        duplicate_count = int(
+            quality_history.duplicated(
+                subset=["Date", "Symbol", "Expiry Date"]
+            ).sum()
         )
-        .reset_index()
-        .rename(columns={
-            "Symbol": "Contract",
-            "Rows": "Records",
-            "TradingDates": "Trading dates",
-        })
-    )
 
-    st.dataframe(coverage, hide_index=True, width="stretch")
+        valid_dates = quality_history["Date"].dropna()
+        latest_date = (
+            valid_dates.max() if not valid_dates.empty else pd.NaT
+        )
+        history_dates_quality = valid_dates.nunique()
+        history_rows_quality = len(quality_history)
+
+        m1, m2, m3, m4 = st.columns(4)
+
+        m1.metric("Historical rows", f"{history_rows_quality:,}")
+        m2.metric("Trading dates", f"{history_dates_quality:,}")
+        m3.metric("Missing / invalid closes", f"{missing_closes:,}")
+        m4.metric("Duplicate records", f"{duplicate_count:,}")
+
+        st.markdown("#### Data freshness")
+
+        f1, f2 = st.columns(2)
+
+        with f1:
+            st.metric(
+                "Latest observation",
+                (
+                    latest_date.strftime("%d %b %Y")
+                    if pd.notna(latest_date)
+                    else "Unavailable"
+                ),
+            )
+
+        with f2:
+            st.metric(
+                "Invalid date values",
+                f"{invalid_dates + invalid_expiries:,}",
+            )
+
+        if history_dates_quality < 30:
+            st.warning(
+                f"LIMITED HISTORY — {history_dates_quality} unique "
+                "observation dates are available. This supports pipeline "
+                "testing, but is not enough to establish robust strategy "
+                "performance."
+            )
+
+        if nonpositive_closes:
+            st.error(
+                f"{nonpositive_closes} non-positive closing prices were "
+                "found. Investigate these records before analysis."
+            )
+
+        if invalid_dates or invalid_expiries:
+            st.warning(
+                "Some observation or expiry dates could not be parsed. "
+                "Review the source data before relying on date-based analysis."
+            )
+
+        if (
+            missing_closes == 0
+            and duplicate_count == 0
+            and invalid_dates == 0
+            and invalid_expiries == 0
+            and nonpositive_closes == 0
+        ):
+            st.success(
+                "STRUCTURAL CHECKS PASSED — no missing or non-positive "
+                "closes, duplicate keys, or invalid dates were detected."
+            )
+        else:
+            st.warning(
+                "VALIDATION NEEDS REVIEW — one or more structural checks "
+                "identified records requiring investigation."
+            )
+
+        st.caption(
+            "These checks assess structural consistency, not whether prices "
+            "match an authoritative MCX source or are free from all errors."
+        )
+
+        st.markdown("#### Contract coverage")
+
+        coverage = (
+            quality_history.dropna(subset=["Date"])
+            .groupby("Symbol")
+            .agg(
+                Rows=("Symbol", "size"),
+                TradingDates=("Date", "nunique"),
+                MissingCloses=("Close", lambda s: int(s.isna().sum())),
+                UniqueExpiries=("Expiry Date", "nunique"),
+            )
+            .reset_index()
+            .rename(columns={
+                "Symbol": "Contract",
+                "Rows": "Records",
+                "TradingDates": "Trading dates",
+                "MissingCloses": "Missing closes",
+                "UniqueExpiries": "Unique expiries",
+            })
+        )
+
+        st.dataframe(
+            coverage,
+            hide_index=True,
+            use_container_width=True,
+        )
 
 else:
     st.warning(
@@ -699,7 +812,7 @@ if not quality_report.empty:
     st.dataframe(
         quality_report,
         hide_index=True,
-        width="stretch",
+        use_container_width=True,
     )
 else:
     st.info(
@@ -712,7 +825,7 @@ else:
 
 # ---------- Relative-value analysis ----------
 st.markdown(
-    '<div class="section-label">03 / RELATIVE VALUE</div>',
+    '<div class="section-label">04 / RELATIVE VALUE</div>',
     unsafe_allow_html=True,
 )
 st.header("Cross-contract spread monitor")
@@ -775,16 +888,30 @@ if SPREAD_FILE.exists():
                 "No eligible same-expiry pairs for the selected contracts."
             )
         else:
-            # Positive/negative shows direction; absolute spread ranks size.
+             
+            # Rank comparable pairs from the latest observation date.
             spreads["AbsoluteSpreadPercent"] = (
                 spreads["Spread_Percent_of_Mid"].abs()
             )
             spreads["ContractPair"] = (
                 spreads["ContractA"] + " vs " + spreads["ContractB"]
             )
-            spreads = spreads.sort_values(
-                "AbsoluteSpreadPercent", ascending=False
+
+            latest_observation_date = spreads["Date"].max()
+            all_historical_spreads = spreads.copy()
+            latest_snapshot = spreads[
+                spreads["Date"] == latest_observation_date
+            ].copy()
+
+            latest_snapshot = latest_snapshot.sort_values(
+                "AbsoluteSpreadPercent",
+                ascending=False,
             ).reset_index(drop=True)
+
+            if latest_snapshot.empty:
+                st.info("No valid spread pairs exist for the latest observation date.")
+            else:
+                spreads = latest_snapshot
 
             # This is a data-review status, not a buy/sell recommendation.
             spreads["ReviewStatus"] = "Investigate"
@@ -900,6 +1027,144 @@ if SPREAD_FILE.exists():
                 use_container_width=True,
                 hide_index=True,
             )
+            
+            # ---------- Research insight ----------
+            st.markdown("#### Research insight")
+
+            latest_date = spreads["Date"].max()
+
+            latest_spreads = spreads[
+                spreads["Date"] == latest_date
+            ].copy()
+
+            if not latest_spreads.empty:
+                latest_spreads["AbsPct"] = (
+                    latest_spreads["Spread_Percent_of_Mid"].abs()
+                )
+
+                largest = latest_spreads.loc[
+                    latest_spreads["AbsPct"].idxmax()
+                ]
+
+                pair_history = all_historical_spreads[
+                    (
+                        all_historical_spreads["ContractA"]
+                        == largest["ContractA"]
+                    )
+                    & (
+                        all_historical_spreads["ContractB"]
+                        == largest["ContractB"]
+                    )
+                    & (
+                        all_historical_spreads["Expiry Date"]
+                        == largest["Expiry Date"]
+                    )
+                    & (
+                        all_historical_spreads["Date"]
+                        < latest_date
+                    )
+                ].copy()
+
+                pair_history["Spread_Percent_of_Mid"] = pd.to_numeric(
+                    pair_history["Spread_Percent_of_Mid"],
+                    errors="coerce",
+                )
+
+                history_values = pair_history[
+                    "Spread_Percent_of_Mid"
+                ].dropna()
+
+                history_count = len(history_values)
+
+                if history_count >= 15:
+                    historical_mean = history_values.mean()
+                    historical_std = history_values.std(ddof=1)
+
+                    if historical_std > 0:
+                        z_score = (
+                            largest["Spread_Percent_of_Mid"]
+                            - historical_mean
+                        ) / historical_std
+
+                        context_text = (
+                            f"{history_count} prior observations; "
+                            f"historical mean {historical_mean:.3f}%; "
+                            f"standardized deviation {z_score:+.2f}."
+                        )
+                    else:
+                        context_text = (
+                            f"{history_count} prior observations, but "
+                            "historical spread variation is zero; "
+                            "a standardized deviation cannot be calculated."
+                        )
+                else:
+                    context_text = (
+                        f"Only {history_count} prior observations exist "
+                        "for this exact contract pair and expiry. "
+                        "At least 15 are required for historical context."
+                    )
+
+                st.markdown(
+                    f"""
+                    <div style="
+                        background:linear-gradient(135deg,#111A29,#172235);
+                        border:1px solid #344155;
+                        border-left:4px solid #E7BD68;
+                        border-radius:12px;
+                        padding:22px;
+                        margin:12px 0 20px 0;">
+                        <div style="
+                            color:#E7BD68;
+                            font-size:0.75rem;
+                            letter-spacing:2px;
+                            font-weight:700;">
+                            LATEST SNAPSHOT · RESEARCH NOTE
+                        </div>
+                        <div style="
+                            color:#F3F0E8;
+                            font-size:1.2rem;
+                            font-weight:650;
+                            margin-top:10px;">
+                            {largest['ContractPair']}
+                        </div>
+                        <div style="
+                            color:#CBD5E1;
+                            line-height:1.7;
+                            margin-top:8px;">
+                            On {latest_date:%d %b %Y}, the largest absolute
+                            spread among the latest-date pairs was
+                            <b>{largest['AbsPct']:.3f}%</b>, equivalent to
+                            <b>₹{abs(largest['Spread_Rs_per_10g']):,.2f}</b>
+                            per 10g reference basis.
+                        </div>
+                        <div style="
+                            color:#CBD5E1;
+                            line-height:1.7;
+                            margin-top:12px;">
+                            <b>Historical context:</b> {context_text}
+                        </div>
+                        <div style="
+                            color:#94A3B8;
+                            font-size:0.85rem;
+                            margin-top:12px;">
+                            Historical deviation is descriptive, not a
+                            verified anomaly or trading signal. Contract
+                            specifications, liquidity, costs, and quote
+                            conventions still require validation.
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.info(
+                    "Research insight is unavailable for the latest date."
+                )
+
+            
+            
+       
+
 
             st.info(
                 "Interpretation: positive A − B means Contract A has the "
@@ -914,23 +1179,27 @@ else:
         "Spread data is not available. Run python spread_analysis.py "
         "from the backend folder first."
     )
-
+    
 # ---------- Historical anomaly detection ----------
 st.markdown(
-    '<div class="section-label">04 / STATISTICAL SURVEILLANCE</div>',
+    '<div class="section-label">05 / STATISTICAL SURVEILLANCE</div>',
     unsafe_allow_html=True,
 )
 st.header("Historical spread anomalies")
 st.caption(
-    "Rolling 20-observation baseline; requires at least 15 prior observations "
-    "for the same contract pair and expiry. Today's observation is excluded "
-    "from its own baseline."
+    "Historical deviation monitoring for same-expiry contract pairs. "
+    "The current observation is excluded from its own rolling baseline."
 )
 
 ANOMALY_FILE = DATA_DIR / "spread_anomalies.csv"
+MIN_HISTORY = 15
+Z_THRESHOLD = 2.0
 
 if not ANOMALY_FILE.exists():
-    st.info("Run python anomaly_analysis.py to generate anomaly results.")
+    st.warning(
+        "Anomaly results are not available yet. "
+        "Run anomaly_analysis.py to generate them."
+    )
 else:
     anomalies = pd.read_csv(ANOMALY_FILE)
 
@@ -944,6 +1213,13 @@ else:
             anomalies["Expiry Date"], errors="coerce"
         )
 
+        for col in ["HistoryCount", "SpreadPercent", "HistoricalMean", "ZScore"]:
+            if col in anomalies.columns:
+                anomalies[col] = pd.to_numeric(
+                    anomalies[col], errors="coerce"
+                )
+
+        anomalies = anomalies.dropna(subset=["Date"])
         anomalies = anomalies[
             anomalies["ContractA"].isin(selected_symbols)
             & anomalies["ContractB"].isin(selected_symbols)
@@ -952,69 +1228,91 @@ else:
         if anomalies.empty:
             st.info("No anomaly records match the selected contracts.")
         else:
-            latest_anomalies = anomalies[
-                anomalies["Date"] == anomalies["Date"].max()
-            ].copy()
+            latest_date = anomalies["Date"].max()
+            latest = anomalies[anomalies["Date"] == latest_date].copy()
 
-            enough_history = (
-                pd.to_numeric(
-                    latest_anomalies["HistoryCount"], errors="coerce"
-                ).fillna(0) >= 15
+            latest["HistoryCount"] = latest["HistoryCount"].fillna(0)
+            latest["Status"] = latest["Status"].fillna(
+                "Insufficient history"
             )
-            flagged = latest_anomalies[
-                latest_anomalies["Status"] == "Investigate anomaly"
-            ]
 
-            a, b, c = st.columns(3)
+            enough_history = latest["HistoryCount"] >= MIN_HISTORY
+            flagged = latest[
+                (latest["Status"] == "Investigate anomaly")
+                & enough_history
+            ]
+            insufficient = latest[~enough_history]
+
+            st.markdown(
+                f"**Latest observation:** {latest_date:%d %b %Y}"
+            )
+
+            a, b, c, d = st.columns(4)
 
             with a:
                 metric_card(
-                    "Pairs evaluated",
-                    str(len(latest_anomalies)),
+                    "Pairs monitored",
+                    f"{len(latest):,}",
                     "Latest observation date",
                 )
 
             with b:
                 metric_card(
-                    "History ready",
-                    f"{int(enough_history.sum())}/{len(latest_anomalies)}",
-                    "Pairs with sufficient baseline",
+                    "Baseline available",
+                    f"{int(enough_history.sum())}/{len(latest)}",
+                    "At least 15 prior observations",
                 )
 
             with c:
                 metric_card(
-                    "Flagged for review",
-                    str(len(flagged)),
-                    "Statistical alerts, not trade signals",
+                    "Needs more data",
+                    f"{len(insufficient):,}",
+                    "Insufficient historical sample",
                 )
 
-            if not enough_history.any():
-                st.warning(
-                    "INSUFFICIENT HISTORY — GoldLens needs at least 15 prior "
-                    "same-expiry observations per pair before calculating "
-                    "a historical z-score. Current flags are not available."
+            with d:
+                metric_card(
+                    "Review alerts",
+                    f"{len(flagged):,}",
+                    "Z-score threshold: ±2.0",
                 )
-            elif not flagged.empty:
+
+            if not flagged.empty:
                 st.warning(
-                    "Potential statistical anomalies detected. Validate "
-                    "quotes, contract terms, liquidity and transaction costs."
+                    f"{len(flagged)} pair(s) crossed the configured "
+                    "statistical threshold. Review the data and contract "
+                    "details; this is not a trading recommendation."
+                )
+            elif not insufficient.empty:
+                st.info(
+                    "The available history is not yet sufficient to evaluate "
+                    "every pair. GoldLens is withholding conclusions where "
+                    "the minimum sample requirement is not met."
                 )
             else:
                 st.success(
-                    "No spreads crossed the configured statistical threshold "
-                    "among pairs with sufficient history."
+                    "No eligible pair crossed the configured investigation "
+                    "threshold on the latest observation date."
                 )
 
+            st.markdown("#### Latest pair assessments")
+
             display_cols = [
-                "Date", "Expiry Date", "ContractA", "ContractB",
-                "SpreadPercent", "HistoricalMean", "ZScore",
-                "HistoryCount", "Status",
+                "Date",
+                "Expiry Date",
+                "ContractA",
+                "ContractB",
+                "SpreadPercent",
+                "HistoricalMean",
+                "ZScore",
+                "HistoryCount",
+                "Status",
             ]
             display_cols = [
-                c for c in display_cols if c in latest_anomalies.columns
+                col for col in display_cols if col in latest.columns
             ]
 
-            display = latest_anomalies[display_cols].copy()
+            display = latest[display_cols].copy()
             display = display.rename(columns={
                 "Date": "Observation date",
                 "Expiry Date": "Shared expiry",
@@ -1024,7 +1322,7 @@ else:
                 "HistoricalMean": "Prior mean (%)",
                 "ZScore": "Z-score",
                 "HistoryCount": "Prior observations",
-                "Status": "Review status",
+                "Status": "Research status",
             })
 
             for col in ["Observation date", "Shared expiry"]:
@@ -1033,22 +1331,229 @@ else:
                         display[col], errors="coerce"
                     ).dt.strftime("%d %b %Y")
 
+            for col in ["Current spread (%)", "Prior mean (%)", "Z-score"]:
+                if col in display.columns:
+                    display[col] = display[col].round(3)
+
             st.dataframe(
                 display,
                 use_container_width=True,
                 hide_index=True,
+                column_config={
+                    "Research status": st.column_config.TextColumn(
+                        "Research status",
+                        help=(
+                            "Insufficient history, within historical range, "
+                            "or flagged for further investigation."
+                        ),
+                    ),
+                    "Z-score": st.column_config.NumberColumn(
+                        "Z-score",
+                        help=(
+                            "Distance from the prior historical mean in "
+                            "standard-deviation units."
+                        ),
+                        format="%.3f",
+                    ),
+                },
             )
 
-            st.caption(
-                "A z-score measures how far the current spread is from its "
-                "historical mean in standard-deviation units. The 2.0 "
-                "threshold is a configurable research heuristic, not a "
-                "validated trading rule."
+            # Show a visual comparison only where a valid baseline exists.
+            chart_data = latest[
+                enough_history
+                & latest["ZScore"].notna()
+            ].copy()
+            
+            # ---------- Research summary ----------
+            st.markdown(
+                '<div class="section-label">RESEARCH BRIEF / LATEST SNAPSHOT</div>',
+               unsafe_allow_html=True,
             )
+            st.subheader("Research summary")
+            st.caption(
+                f"Historical research snapshot | Observation date: "
+                f"{pd.to_datetime(chart_data['Date']).max():%d %b %Y} | "
+                "Based on recorded MCX bhavcopy data; not live market prices."
+            )
+            if not chart_data.empty:
+                summary_row = chart_data.loc[
+                    chart_data["ZScore"].abs().idxmax()
+                ]
+
+                summary_pair = (
+                    f"{summary_row['ContractA']} vs "
+                    f"{summary_row['ContractB']}"
+                )
+                summary_z = float(summary_row["ZScore"])
+                summary_spread = float(summary_row["SpreadPercent"])
+                summary_mean = float(summary_row["HistoricalMean"])
+                summary_count = int(summary_row["HistoryCount"])
+
+                if abs(summary_z) >= Z_THRESHOLD:
+                    summary_status = "Review required"
+                    st.warning(
+                        f"**{summary_pair}** recorded a Z-score of "
+                        f"**{summary_z:+.2f}**, crossing the configured "
+                        f"±{Z_THRESHOLD:.1f} review threshold. "
+                        "Inspect the underlying observations, contract "
+                        "specifications and liquidity before interpreting "
+                        "this deviation."
+                    )
+                else:
+                    summary_status = "Within configured threshold"
+                    st.info(
+                        f"**{summary_pair}** has the largest absolute "
+                        f"Z-score among eligible pairs (**{summary_z:+.2f}**). "
+                        f"It remains inside the configured ±{Z_THRESHOLD:.1f} "
+                        "threshold; this does not establish that the spread "
+                        "is fairly priced or safe to trade."
+                    )
+                s1, s2, s3, s4 = st.columns([1.35, 1, 1, 1])    
+
+                with s1:
+                                metric_card(
+                                    "HIGHLIGHTED PAIR",
+                                    f"{summary_row['ContractA']} vs {summary_row['ContractB']}",
+                                    "Largest absolute Z-score",
+                                )
+                with s2:
+                    metric_card(
+                        "Current spread",
+                        f"{summary_spread:.3f}%",
+                        "Signed percentage spread",
+                    )
+
+                with s3:
+                    metric_card(
+                        "Historical mean",
+                        f"{summary_mean:.3f}%",
+                        "Prior observations only",
+                    )
+
+                with s4:
+                    metric_card(
+                        "Evidence count",
+                        str(summary_count),
+                        "Prior observations",
+                    )
+
+                st.caption(
+                    "This summary identifies the most statistically "
+                    "deviant eligible pair in the latest snapshot. "
+                    "It is a research prioritization aid, not a "
+                    "buy/sell recommendation."
+                )
+            else:
+                st.info(
+                    "No pair currently has enough valid historical data "
+                    "to produce a Research Summary. More observations "
+                    "are needed before calculating a meaningful deviation."
+                )
+
+
+            if not chart_data.empty:
+                st.markdown("#### Deviation from historical baseline")
+
+                chart_data["Pair"] = (
+                    chart_data["ContractA"]
+                    + " vs "
+                    + chart_data["ContractB"]
+                )
+
+                chart_data["Assessment"] = np.where(
+                    chart_data["ZScore"].abs() >= Z_THRESHOLD,
+                    "Review threshold crossed",
+                    "Within configured threshold",
+                )
+
+                deviation_chart = px.bar(
+                    chart_data.sort_values("ZScore"),
+                    x="ZScore",
+                    y="Pair",
+                    color="Assessment",
+                    orientation="h",
+                    color_discrete_map={
+                        "Review threshold crossed": "#F0A35E",
+                        "Within configured threshold": "#55D6BE",
+                    },
+                    hover_data={
+                        "SpreadPercent": ":.3f",
+                        "HistoricalMean": ":.3f",
+                        "HistoryCount": True,
+                    },
+                    labels={
+                        "ZScore": "Z-score",
+                        "Pair": "Contract pair",
+                        "Assessment": "Assessment",
+                        "SpreadPercent": "Current spread (%)",
+                        "HistoricalMean": "Prior mean (%)",
+                        "HistoryCount": "Prior observations",
+                    },
+                )
+
+                deviation_chart.add_vline(
+                    x=Z_THRESHOLD,
+                    line_dash="dash",
+                    line_color="#F0A35E",
+                )
+                deviation_chart.add_vline(
+                    x=-Z_THRESHOLD,
+                    line_dash="dash",
+                    line_color="#F0A35E",
+                )
+                deviation_chart.add_vline(
+                    x=0,
+                    line_color="#64748B",
+                )
+                deviation_chart.update_layout(
+                    template="plotly_dark",
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    font=dict(
+                        family="DM Sans, sans-serif",
+                        color="#CBD5E1",
+                    ),
+                    margin=dict(l=10, r=15, t=20, b=35),
+                    xaxis=dict(
+                        gridcolor="#263247",
+                        zeroline=False,
+                    ),
+                    yaxis=dict(showgrid=False),
+                    legend_title_text="",
+                )
+                st.plotly_chart(
+                    deviation_chart,
+                    use_container_width=True,
+                )
+            else:
+                st.info(
+                    "The deviation chart will become available when at least "
+                    "one pair has 15 prior observations and a valid "
+                    "historical standard deviation."
+                )
+
+            with st.expander("Methodology and research limitations"):
+                st.markdown(
+                    f"""
+                    - **Baseline window:** 20 prior observations.
+                    - **Minimum history:** {MIN_HISTORY} prior observations.
+                    - **Investigation threshold:** absolute Z-score ≥ {Z_THRESHOLD}.
+                    - **Look-ahead protection:** the current spread is excluded
+                      from its own historical mean and standard deviation.
+                    - **Interpretation:** an alert indicates an unusual
+                      historical observation under this rule. It does not
+                      establish mispricing, executable arbitrage, or profitability.
+                    - **Validation still required:** contract specifications,
+                      quote conventions, liquidity, transaction costs, and
+                      robustness across a longer history.
+                    """
+                )
+
+
 
 # ---------- Term structure analysis ----------
 st.markdown(
-    '<div class="section-label">05 / TERM STRUCTURE</div>',
+    '<div class="section-label">06 / TERM STRUCTURE</div>',
     unsafe_allow_html=True,
 )
 st.header("Gold futures term structure")
@@ -1248,7 +1753,7 @@ else:
 
 # ---------- Backtesting & Strategy Evaluation ----------
 st.markdown(
-    '<div class="section-label">06 / STRATEGY EVALUATION</div>',
+    '<div class="section-label">07 / STRATEGY EVALUATION</div>',
     unsafe_allow_html=True,
 )
 st.header("Backtesting & strategy evaluation")
