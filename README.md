@@ -2,49 +2,56 @@
 
 **An interactive research dashboard for MCX gold futures analysis.**
 
-GoldLens transforms historical MCX bhavcopy data into actionable research insights through contract monitoring, data quality validation, spread analysis, anomaly detection, term structure analysis, and exploratory backtesting.
+GoldLens transforms historical MCX bhavcopy data into research insights through contract monitoring, data quality validation, spread analysis, statistical anomaly detection, term structure analysis, and exploratory backtesting.
 
-### 🚀 Live Demo
-
-**[Launch GoldLens Dashboard](https://goldlens-bpf4to3y9kflvhw6lznksq.streamlit.app)**
-
-**[View Source Code on GitHub](https://github.com/vds18/GoldLens)**
+🔗 **[Launch Live Dashboard](https://goldlens-bpf4to3y9kflvhw6lznksq.streamlit.app/)** · **[View Source Code](https://github.com/vds18/GoldLens)**
 
 ---
 
 ## ✨ Features
 
-- **Contract Monitor:** Explore supported gold futures contracts — GOLDM, GOLDTEN, GOLDGUINEA, and GOLDPETAL.
+- **Contract Monitor:** Explore four supported gold futures contracts: `GOLDM`, `GOLDTEN`, `GOLDGUINEA`, and `GOLDPETAL`.
 - **Historical Data Analysis:** Process and analyze historical MCX bhavcopy data.
 - **Data Quality & Validation:** Inspect missing prices, duplicate records, historical coverage, and contract-level data quality.
 - **Spread Analysis:** Compare normalized prices across supported gold futures contracts.
-- **Anomaly Detection:** Identify unusual historical spread movements using statistical measures.
+- **Statistical Anomaly Detection:** Identify unusual historical spread movements using historical statistical measures.
 - **Term Structure Analysis:** Examine price relationships across contract expiries.
 - **Exploratory Backtesting:** Review simulated spread movements, trade records, and backtest reports where available.
-- **Interactive Dashboard:** Explore analytical outputs through a Streamlit-based interface.
+- **Interactive Visualizations:** Explore analytical outputs through a Streamlit dashboard.
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack
 
-- **Language:** Python
-- **Data Processing:** Pandas, NumPy
-- **Dashboard:** Streamlit
-- **Visualization:** Plotly (where used)
-- **Data Source:** MCX bhavcopy CSV files
-- **Version Control:** Git and GitHub
-- **Deployment:** Streamlit Community Cloud
+| Component | Technology |
+|---|---|
+| Language | Python |
+| Data processing | Pandas, NumPy |
+| Dashboard | Streamlit |
+| Visualization | Plotly |
+| Data source | MCX bhavcopy CSV files |
+| Version control | Git, GitHub |
+| Deployment | Streamlit Community Cloud |
 
 ## 📊 Current Data Snapshot
 
-The deployed prototype currently displays:
+The current prototype's documented historical snapshot is:
 
 | Metric | Value |
 |---|---:|
 | Supported gold contracts | 4 |
 | Historical trading dates | 34 |
-| Historical data through | 19 October 2026 |
+| Latest data date | 19 October 2026 |
 | Historical records | 816 |
 
-These figures reflect the current dashboard snapshot and may change when the underlying dataset is updated.
+These figures describe the current dataset snapshot and may change as the underlying data is updated. GoldLens analyzes historical data; it does not claim to provide live market prices.
+
+## 🔍 Analytical Workflow
+
+1. **Load** historical MCX bhavcopy CSV files.
+2. **Validate** records, dates, prices, duplicates, and contract coverage.
+3. **Analyze** price relationships across supported contracts.
+4. **Detect** unusual spread movements against historical baselines.
+5. **Explore** term structure and backtesting outputs.
+6. **Interpret** results with attention to data limitations and research assumptions.
 
 ## 📁 Project Structure
 
@@ -72,7 +79,7 @@ GoldLens/
 
 ### Prerequisites
 
-- Python 3.11 or a compatible version
+- Python 3.11 or another version compatible with the project's dependencies
 - Git
 
 ### 1. Clone the repository
@@ -94,27 +101,30 @@ python -m venv venv
 ### 3. Install dependencies
 
 ```powershell
-pip install -r backend/requirements.txt
+python -m pip install -r backend/requirements.txt
 ```
 
-### 4. Launch the dashboard
+### 4. Prepare the data
+
+Ensure the required raw and processed data files are present in the expected locations under `backend/data/`. Follow the repository's data-processing scripts and the paths configured in the application.
+
+### 5. Launch the dashboard
+
+From the repository root:
 
 ```powershell
-cd backend
-python -m streamlit run app.py --server.port 8502
+python -m streamlit run backend/app.py --server.port 8502
 ```
 
-Open **http://localhost:8502** in your browser.
-
-Ensure the required processed data files are available in `backend/data/processed/` before launching the application.
+Open [http://localhost:8502](http://localhost:8502) in your browser.
 
 ## 🔬 Research Limitations
 
 - Historical coverage depends on the available source data.
 - Contract normalization and expiry conventions require validation against official contract specifications.
-- Statistical anomalies indicate unusual historical movements, not necessarily profitable opportunities.
+- Statistical anomalies indicate unusual historical movements; they do not establish profitable trading opportunities.
 - Backtesting results are exploratory and should not be interpreted as verified trading performance.
-- Transaction costs, brokerage, taxes, slippage, liquidity, contract quantities, and execution constraints must be considered before evaluating real-world performance.
+- Transaction costs, brokerage, taxes, slippage, liquidity, contract quantities, and execution constraints matter when assessing real-world performance.
 - Historical results do not guarantee future outcomes.
 
 ## 🗺️ Roadmap
@@ -133,7 +143,7 @@ GoldLens is an educational and analytical research prototype. It is not financia
 
 **Vanshika Dutt Srivastava**
 
-[GitHub](https://github.com/vds18)
+[GitHub Profile](https://github.com/vds18) · [GoldLens Repository](https://github.com/vds18/GoldLens)
 
 ---
 
