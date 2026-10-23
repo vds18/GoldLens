@@ -25,343 +25,654 @@ st.set_page_config(
 # ---------- Design system ----------
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-    --gold: #E7BD68;
-    --bg: #090E19;
-    --panel: #111827;
-    --border: #263247;
-    --muted: #94A3B8;
-    --white: #F1F5F9;
+    --gold: #D9B567;
+    --gold-bright: #F0D18A;
+    --bg: #0A101B;
+    --panel: #121C2B;
+    --panel-raised: #172336;
+    --border: #2A3A50;
+    --muted: #9AAAC0;
+    --text: #F3F6FB;
+    --body: #CDD6E3;
+    --green: #49D6A2;
+    --coral: #FF8585;
+    --blue: #80B7FF;
 }
 
 .stApp {
-    background: var(--bg);
-    color: var(--white);
+    background:
+        radial-gradient(ellipse at 82% 0%, rgba(217,181,103,.075), transparent 32%),
+        var(--bg);
+    color: var(--text);
     font-family: 'DM Sans', sans-serif;
 }
-
-[data-testid="stHeader"] {
-    background: rgba(9, 14, 25, 0.95);
-}
-
+[data-testid="stHeader"] { background: rgba(10,16,27,.94); }
 [data-testid="stSidebar"] {
-    background: #0D1422;
+    background: linear-gradient(180deg, #101A29 0%, #0C1420 100%);
     border-right: 1px solid var(--border);
 }
-
-[data-testid="stSidebar"] * {
-    font-family: 'DM Sans', sans-serif;
-}
-
+[data-testid="stSidebar"] * { font-family: 'DM Sans', sans-serif; }
 .block-container {
-    max-width: 1500px;
-    padding-top: 2rem;
-    padding-bottom: 3rem;
+    max-width: 1540px;
+    padding-top: 1.55rem;
+    padding-bottom: 2.5rem;
 }
-
-h1, h2, h3 {
+h1, h2, h3, h4 {
     font-family: 'Space Grotesk', sans-serif !important;
-    color: var(--white) !important;
-    letter-spacing: -0.5px;
+    color: var(--text) !important;
+    letter-spacing: -.025em;
 }
+h1 { font-size: clamp(1.8rem, 3vw, 2.45rem) !important; }
+h2 { font-size: 1.42rem !important; }
+h3 { font-size: 1.08rem !important; }
+p, label, [data-testid="stMarkdownContainer"] { color: var(--body); }
+small, [data-testid="stCaptionContainer"] { color: var(--muted); }
+hr { border-color: var(--border); }
+footer, #MainMenu { visibility: hidden; }
 
-h1 { font-size: 2.35rem !important; }
-h2 { font-size: 1.35rem !important; }
-h3 { font-size: 1.05rem !important; }
-
-p, label, [data-testid="stMarkdownContainer"] {
-    color: #CBD5E1;
-}
-
+/* Brand and first-screen hero */
 .goldlens-brand {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.1rem;
+    font-size: 1.12rem;
     font-weight: 700;
-    color: var(--gold);
-    letter-spacing: 2px;
+    color: var(--gold-bright);
+    letter-spacing: 1.8px;
 }
-
 .hero {
-    background: linear-gradient(115deg, #151F31 0%, #101827 65%, #242015 100%);
-    border: 1px solid #344155;
-    border-radius: 18px;
-    padding: 27px 30px;
-    margin: 8px 0 24px 0;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 92% 5%, rgba(217,181,103,.17), transparent 38%),
+        linear-gradient(130deg, #172438 0%, #101A29 62%, #151D2A 100%);
+    border: 1px solid #35465D;
+    border-radius: 20px;
+    padding: 30px 32px;
+    margin: 8px 0 22px 0;
+    box-shadow: 0 18px 42px rgba(0,0,0,.19);
 }
-
 .eyebrow {
-    color: var(--gold);
-    font-size: 0.72rem;
+    color: var(--gold-bright);
+    font-size: .72rem;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
 }
-
 .hero-title {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 2.15rem;
+    font-size: clamp(2rem, 4vw, 2.7rem);
     font-weight: 700;
     color: #F8FAFC;
-    margin: 9px 0 5px 0;
+    letter-spacing: -.045em;
+    line-height: 1.12;
+    margin: 10px 0 8px;
 }
-
 .hero-subtitle {
-    color: #AAB8CC;
-    font-size: 0.95rem;
+    color: #B7C4D6;
+    font-size: .98rem;
+    line-height: 1.7;
+    max-width: 800px;
+}
+.section-label {
+    color: var(--gold-bright);
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+    margin-top: 1.6rem;
+    margin-bottom: .42rem;
 }
 
+/* KPI cards */
 .metric-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
+    height: 100%;
+    box-sizing: border-box;
+    background: linear-gradient(145deg, #172337 0%, #111B2A 100%);
+    border: 1px solid #2D3E54;
     border-radius: 14px;
     padding: 18px 20px;
-    min-height: 112px;
+    min-height: 116px;
+    transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
 }
-
+.metric-card:hover {
+    border-color: #A98C50;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0,0,0,.14);
+}
 .metric-label {
-    font-size: 0.76rem;
-    color: var(--muted);
+    color: #AAB8CB;
+    font-size: .74rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: .085em;
 }
-
 .metric-value {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.65rem;
-    font-weight: 700;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: clamp(1.15rem, 2vw, 1.7rem);
+    font-weight: 600;
     color: #F8FAFC;
-    margin-top: 10px;
+    overflow-wrap: anywhere;
+    margin-top: 9px;
+    line-height: 1.3;
 }
-
-.metric-note {
+.metric-note, .metric-caption {
     color: var(--gold);
-    font-size: 0.76rem;
-    margin-top: 4px;
+    font-size: .76rem;
+    line-height: 1.45;
+    margin-top: 5px;
 }
 
-.section-label {
-    color: var(--gold);
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 1.8px;
-    text-transform: uppercase;
-    margin-bottom: 5px;
+/* Native Streamlit metrics and form controls */
+div[data-testid="stMetric"] {
+    background: linear-gradient(145deg, #172337 0%, #111B2A 100%);
+    border: 1px solid #2D3E54;
+    border-radius: 13px;
+    padding: 14px 17px;
+}
+div[data-testid="stMetricLabel"] { color: var(--muted); }
+div[data-testid="stMetricValue"] {
+    color: var(--gold-bright);
+    font-family: 'IBM Plex Mono', monospace;
+}
+[data-testid="stSidebar"] [data-testid="stMultiSelect"] > div > div {
+    background: #111B2A !important;
+    border: 1px solid #35465D !important;
+    border-radius: 10px !important;
+}
+[data-testid="stSidebar"] [data-testid="stMultiSelect"] span[data-baseweb="tag"] {
+    background: #26374D !important;
+    border: 1px solid #B99A56 !important;
+    border-radius: 6px !important;
+}
+[data-testid="stSidebar"] [data-testid="stMultiSelect"] span[data-baseweb="tag"] * {
+    color: #F8FAFC !important;
+}
+.stButton > button, .stDownloadButton > button {
+    border: 1px solid #B99A56 !important;
+    border-radius: 9px !important;
+    font-weight: 600 !important;
+    transition: all .18s ease;
+}
+.stButton > button:hover, .stDownloadButton > button:hover {
+    border-color: var(--gold-bright) !important;
+    transform: translateY(-1px);
 }
 
+
+/* Charts and tables */
 div[data-testid="stPlotlyChart"],
-div[data-testid="stDataFrame"] {
+div[data-testid="stDataFrame"],
+div[data-testid="stTable"] {
     border: 1px solid var(--border);
     border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+}
+
+/* Native Streamlit table surfaces */
+[data-testid="stDataFrame"],
+[data-testid="stDataFrame"] > div,
+[data-testid="stTable"],
+[data-testid="stTable"] > div {
+    background: var(--panel) !important;
+    color: var(--text) !important;
+}
+
+/* Tables rendered with Streamlit's native dataframe component */
+[data-testid="stDataFrame"] iframe {
+    color-scheme: dark;
+}
+
+/* Plotly chart labels */
+.js-plotly-plot .plotly .legend text {
+    fill: #D2DCE8 !important;
+}
+.js-plotly-plot .plotly .xtick text,
+.js-plotly-plot .plotly .ytick text {
+    fill: #A7B5C8 !important;
 }
 
 .stAlert {
     border-radius: 10px;
 }
 
-div[data-testid="stMetric"] {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 15px 18px;
+/* Responsive layout */
+@media (max-width: 900px) {
+    .block-container { padding-top: 1.1rem; }
+    .hero { padding: 24px; border-radius: 16px; }
+}
+@media (max-width: 600px) {
+    .block-container {
+        padding-left: .85rem;
+        padding-right: .85rem;
+        padding-top: .75rem;
+    }
+    .hero { padding: 19px; margin-bottom: 16px; }
+    .eyebrow { font-size: .64rem; letter-spacing: 1.3px; }
+    .hero-title { font-size: 1.85rem; }
+    .hero-subtitle { font-size: .9rem; line-height: 1.6; }
+    .metric-card { padding: 14px; min-height: 98px; }
+    .metric-label { font-size: .67rem; letter-spacing: .05em; }
+    .metric-value { font-size: 1.2rem; }
+    .metric-note, .metric-caption { font-size: .72rem; }
+    div[data-testid="stMetric"] { padding: 11px 12px; }
+    [data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {
+        max-width: 100%;
+    }
 }
 
-div[data-testid="stMetricLabel"] {
-    color: var(--muted);
+/* Make the sidebar expand control easier to notice */
+[data-testid="stSidebarCollapsedControl"] {
+    color: #F0D18A !important;
+    background: #172336 !important;
+    border: 1px solid #D9B567 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
 }
 
-div[data-testid="stMetricValue"] {
-    color: var(--gold);
+[data-testid="stSidebarCollapsedControl"] svg {
+    color: #F0D18A !important;
+    fill: #F0D18A !important;
 }
 
-hr {
-    border-color: var(--border);
+[data-testid="stSidebarCollapsedControl"]:hover {
+    background: #26374D !important;
 }
 
-footer { visibility: hidden; }
-#MainMenu { visibility: hidden; }
+/* High-visibility collapsed sidebar control */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] {
+    background: #172336 !important;
+    border: 2px solid #F0D18A !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+    box-shadow: 0 0 12px rgba(240, 209, 138, 0.25) !important;
+}
 
-/* ---------- GoldLens UI polish ---------- */
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="collapsedControl"] button {
+    background: #172336 !important;
+    color: #F0D18A !important;
+}
 
-/* Dark contract selector */
-[data-testid="stSidebar"] [data-testid="stMultiSelect"] > div > div {
-    background: #111827 !important;
-    border: 1px solid #344155 !important;
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="collapsedControl"] svg {
+    color: #F0D18A !important;
+    stroke: #F0D18A !important;
+}
+
+/* GoldLens: high-contrast sidebar toggle */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] {
+    background: #F0D18A !important;
+    border: 2px solid #FFDFA0 !important;
     border-radius: 10px !important;
+    opacity: 1 !important;
+    box-shadow: 0 0 16px rgba(240, 209, 138, 0.55) !important;
 }
 
-[data-testid="stSidebar"] [data-testid="stMultiSelect"] span[data-baseweb="tag"] {
-    background: #263247 !important;
-    border: 1px solid #E7BD68 !important;
-    border-radius: 6px !important;
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="collapsedControl"] button {
+    background: #F0D18A !important;
+    color: #0A101B !important;
+    opacity: 1 !important;
 }
 
-[data-testid="stSidebar"] [data-testid="stMultiSelect"] span[data-baseweb="tag"] * {
-    color: #F8FAFC !important;
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="collapsedControl"] svg {
+    color: #0A101B !important;
+    stroke: #0A101B !important;
+    opacity: 1 !important;
 }
 
-/* More consistent sidebar */
+[data-testid="stSidebarCollapsedControl"]:hover,
+[data-testid="collapsedControl"]:hover {
+    background: #FFDFA0 !important;
+    box-shadow: 0 0 20px rgba(240, 209, 138, 0.75) !important;
+}
+
+
+
+/* GoldLens sidebar: refined navy and gold */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0D1422 0%, #0A101C 100%);
+    background: linear-gradient(
+        180deg,
+        #172438 0%,
+        #101A29 45%,
+        #0A101B 100%
+    ) !important;
+    border-right: 1px solid #3A4B62 !important;
+}
+
+/* Sidebar brand and top section */
+
+/* Keep the sidebar header control visible */
+/* Sidebar header */
+[data-testid="stSidebarHeader"] {
+    min-height: 3.5rem !important;
+    background: linear-gradient(
+        180deg, #172438 0%, #101A29 100%
+    ) !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Sidebar collapse arrow — gold button */
+[data-testid="stSidebarHeader"] button {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 34px !important;
+    height: 34px !important;
+    background: #F0D18A !important;
+    color: #0A101B !important;
+    border: 1px solid #FFDFA0 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+}
+
+/* Dark icon */
+[data-testid="stSidebarHeader"] button svg {
+    color: #0A101B !important;
+    fill: #0A101B !important;
+    stroke: #0A101B !important;
+    opacity: 1 !important;
+}
+
+/* Sidebar expand arrow when collapsed */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] {
+    background: #F0D18A !important;
+    border: 1px solid #FFDFA0 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+}
+
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="collapsedControl"] button {
+    background: #F0D18A !important;
+    color: #0A101B !important;
+    border: none !important;
+    opacity: 1 !important;
+}
+
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="collapsedControl"] svg {
+    color: #0A101B !important;
+    fill: #0A101B !important;
+    stroke: #0A101B !important;
+}
+
+/* Deploy button — gold */
+[data-testid="stDeployButton"] button {
+    background: #F0D18A !important;
+    color: #0A101B !important;
+    border: 1px solid #FFDFA0 !important;
+    border-radius: 8px !important;
+}
+
+/* All ordinary buttons — dark */
+.stButton > button,
+.stDownloadButton > button {
+    background: #121C2B !important;
+    color: #F3F6FB !important;
+    border: 1px solid #35465D !important;
+    border-radius: 9px !important;
+}
+
+/* Sidebar text and dividers */
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    color: #F0D18A !important;
+}
+
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
+    color: #CDD6E3 !important;
 }
 
 [data-testid="stSidebar"] hr {
-    margin-top: 1.3rem;
-    margin-bottom: 1.3rem;
-    border-color: #263247;
+    border-color: #34465D !important;
+}
+/* Make the collapse button visible and gold */
+[data-testid="stSidebarHeader"] button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 34px !important;
+    height: 34px !important;
+    background: #F0D18A !important;
+    border: 1px solid #FFDFA0 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
 }
 
-/* Premium buttons */
+/* Dark, high-contrast icon */
+[data-testid="stSidebarHeader"] button svg {
+    color: #0A101B !important;
+    stroke: #0A101B !important;
+    opacity: 1 !important;
+}
+
+/* Hide the unwanted icon-font text, not the button */
+[data-testid="stSidebarHeader"] [data-testid="stIconMaterial"] {
+    font-size: 0 !important;
+}
+
+/* Sidebar headings */
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    color: #F0D18A !important;
+}
+
+/* Sidebar labels and descriptions */
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
+    color: #CDD6E3 !important;
+}
+
+/* Sidebar dividers */
+[data-testid="stSidebar"] hr {
+    border-color: #34465D !important;
+}
+
+/* Keep the sidebar toggle prominent */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] {
+    background: #F0D18A !important;
+    border: 2px solid #FFDFA0 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+}
+
+/* Clean up the top sidebar header area */
+[data-testid="stSidebarHeader"] {
+    background: linear-gradient(
+        180deg,
+        #172438 0%,
+        #101A29 100%
+    ) !important;
+    border: none !important;
+    box-shadow: none !important;
+    min-height: 3.5rem !important;
+}
+
+/* Hide stray text or labels in the sidebar header */
+[data-testid="stSidebarHeader"] [data-testid="stMarkdownContainer"],
+[data-testid="stSidebarHeader"] p {
+    display: none !important;
+}
+
+/* Keep the sidebar background consistent */
+[data-testid="stSidebar"] > div:first-child {
+    background: linear-gradient(
+        180deg,
+        #172438 0%,
+        #101A29 45%,
+        #0A101B 100%
+    ) !important;
+}
+
+/* Hide the stray icon-font text in the sidebar header */
+[data-testid="stSidebarHeader"] [data-testid="stIconMaterial"] {
+    font-size: 0 !important;
+    color: transparent !important;
+}
+
+/* Keep actual sidebar header buttons visible */
+[data-testid="stSidebarHeader"] button {
+    color: #F0D18A !important;
+    opacity: 1 !important;
+}
+/* Sidebar collapse arrow */
+[data-testid="stSidebarHeader"] button::after {
+    content: "«";
+    color: #0A101B;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1;
+    position: absolute;
+}
+
+[data-testid="stSidebarHeader"] button {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+[data-testid="stSidebarHeader"] button [data-testid="stIconMaterial"] {
+    visibility: hidden !important;
+}
+/* Gold sidebar collapse and expand controls */
+[data-testid="stSidebarHeader"] button,
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"] {
+    background: #F0D18A !important;
+    color: #0A101B !important;
+    border: 1px solid #F0D18A !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+}
+
+[data-testid="stSidebarHeader"] button svg,
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebarCollapsedControl"] svg {
+    color: #0A101B !important;
+    fill: #0A101B !important;
+    stroke: #0A101B !important;
+}
+
+/* Gold Deploy button only */
+[data-testid="stDeployButton"] button {
+    background: #F0D18A !important;
+    color: #0A101B !important;
+    border: 1px solid #F0D18A !important;
+    border-radius: 8px !important;
+}
+
+/* Keep ordinary buttons dark */
+/* Ordinary buttons — visible blue-grey, NOT gold */
 .stButton > button,
-.stDownloadButton > button {
-    border: 1px solid #E7BD68 !important;
+.stDownloadButton > button,
+[data-testid="stFormSubmitButton"] button,
+[data-testid="stPopover"] button {
+    background: #24364B !important;
+    color: #F3F6FB !important;
+    border: 1px solid #526982 !important;
     border-radius: 9px !important;
-    font-weight: 600 !important;
-    transition: all 0.2s ease;
 }
 
 .stButton > button:hover,
-.stDownloadButton > button:hover {
-    border-color: #F5D99A !important;
-    transform: translateY(-1px);
+.stDownloadButton > button:hover,
+[data-testid="stFormSubmitButton"] button:hover,
+[data-testid="stPopover"] button:hover {
+    background: #314962 !important;
+    color: #FFFFFF !important;
+    border-color: #80B7FF !important;
 }
 
-/* Refined section hierarchy */
-.section-label {
-    margin-top: 1.8rem;
-    margin-bottom: 0.45rem;
-    color: #E7BD68;
+/* ONLY the sidebar collapse/expand controls are gold */
+/* Force gold background on the collapsed sidebar toggle */
+[data-testid="stSidebarCollapsedControl"] {
+    background: #F0D18A !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
 }
 
-[data-testid="stPlotlyChart"],
-[data-testid="stDataFrame"] {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="stSidebarCollapsedControl"] > button,
+[data-testid="collapsedControl"] button {
+    background: #F0D18A !important;
+    background-color: #F0D18A !important;
+    color: #0A101B !important;
+    border: 1px solid #FFDFA0 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
 }
 
-/* Clearer chart text and legends */
-.js-plotly-plot .plotly .legend text {
-    fill: #CBD5E1 !important;
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="collapsedControl"] svg {
+    color: #0A101B !important;
+    fill: #0A101B !important;
+    stroke: #0A101B !important;
 }
 
-.js-plotly-plot .plotly .xtick text,
-.js-plotly-plot .plotly .ytick text {
-    fill: #94A3B8 !important;
+/* Gold Deploy button */
+[data-testid="stDeployButton"] button {
+    background: #F0D18A !important;
+    color: #0A101B !important;
+    border: 1px solid #FFDFA0 !important;
+}
+/* Gold background for sidebar expand arrow */
+[data-testid="collapsedControl"] {
+    background: #F0D18A !important;
+    color: #0A101B !important;
+    border: 1px solid #FFDFA0 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
 }
 
-/* Responsive spacing */
-@media (max-width: 768px) {
-    .block-container {
-        padding-top: 1rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-
-    .hero {
-        padding: 20px;
-        border-radius: 14px;
-    }
-
-    .hero-title {
-        font-size: 1.75rem;
-    }
-
-    .metric-value {
-        font-size: 1.35rem;
-    }
+[data-testid="collapsedControl"] svg {
+    color: #0A101B !important;
+    stroke: #0A101B !important;
+}
+/* GoldLens — collapsed sidebar expand button */
+button[data-testid="stExpandSidebarButton"] {
+    background: #F0D18A !important;
+    background-color: #F0D18A !important;
+    color: #0A101B !important;
+    border: 1px solid #FFDFA0 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+    box-shadow: 0 0 12px rgba(240, 209, 138, 0.25) !important;
 }
 
-/* ---------- GoldLens header and KPI polish ---------- */
-
-.hero {
-    background:
-        radial-gradient(ellipse at top right, rgba(231, 189, 104, 0.13), transparent 45%),
-        linear-gradient(135deg, #111C2E 0%, #0C1422 70%);
-    border: 1px solid #344155;
-    border-radius: 18px;
-    padding: 30px 32px;
-    margin-bottom: 28px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+/* Dark double-arrow icon */
+button[data-testid="stExpandSidebarButton"] [data-testid="stIconMaterial"] {
+    color: #0A101B !important;
+    opacity: 1 !important;
 }
 
-.hero-title {
-    color: #F8FAFC;
-    font-size: 2.25rem;
-    font-weight: 750;
-    letter-spacing: -0.035em;
-    line-height: 1.15;
-    margin-bottom: 10px;
+/* Slightly brighter gold on hover */
+button[data-testid="stExpandSidebarButton"]:hover {
+    background: #FFDFA0 !important;
+    background-color: #FFDFA0 !important;
 }
-
-.hero-subtitle {
-    color: #A8B4C7;
-    font-size: 1rem;
-    line-height: 1.65;
-    max-width: 760px;
-}
-
-.metric-card {
-    background: linear-gradient(145deg, #141F31, #101827);
-    border: 1px solid #2D3B50;
-    border-radius: 14px;
-    padding: 20px 22px;
-    min-height: 112px;
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.metric-card:hover {
-    border-color: #B9954D;
-    transform: translateY(-2px);
-}
-
-.metric-label {
-    color: #A8B4C7;
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
-
-.metric-value {
-    color: #F8FAFC;
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-top: 9px;
-    line-height: 1.2;
-}
-
-.metric-caption {
-    color: #8B9AB0;
-    font-size: 0.8rem;
-    margin-top: 6px;
-}
-
-@media (max-width: 768px) {
-    .hero {
-        padding: 22px;
-    }
-
-    .hero-title {
-        font-size: 1.8rem;
-    }
-
-    .metric-card {
-        padding: 15px;
-    }
-
-    .metric-value {
-        font-size: 1.4rem;
-    }
-}
-
 </style>
 """, unsafe_allow_html=True)
 
 
 # ---------- Load data ----------
 st.sidebar.markdown(
-    '<div class="goldlens-brand">◈ GOLDLENS</div>',
+    '<div class="goldlens-brand"> GoldLens</div>',
     unsafe_allow_html=True,
 )
 st.sidebar.caption("COMMODITY INTELLIGENCE")
@@ -464,7 +775,7 @@ st.markdown("""
 <div class="hero">
     <div class="eyebrow">MCX · BULLION MARKETS · RESEARCH TERMINAL</div>
     <div class="hero-title">
-        GoldLens <span style="color:#E7BD68;">◈</span>
+        GoldLens <span style="color:#E7BD68;"></span>
     </div>
     <div class="hero-subtitle">
         One market. Multiple contracts. A clearer view of relative value.
