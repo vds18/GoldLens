@@ -4,8 +4,7 @@
 
 GoldLens transforms historical MCX bhavcopy data into research insights through contract monitoring, data quality validation, spread analysis, statistical anomaly detection, term structure analysis, and exploratory backtesting.
 
-🔗 **[Launch Live Dashboard](https://goldlens-bpf4to3y9kflvhw6lznksq.streamlit.app/)** · **[View Source Code](https://github.com/vds18/GoldLens)**
-
+🔗 [Launch Live Dashboard](https://goldlens-bpf4to3y9kflvhw6lznksq.streamlit.app/) · [View Source Code](https://github.com/vds18/GoldLens)
 ---
 
 ## ✨ Features
