@@ -23,7 +23,7 @@ GoldLens transforms historical MCX bhavcopy data into research insights through 
 
 | Component | Technology |
 |---|---|
-| Language | Python |
+| Programming language | Python |
 | Data processing | Pandas, NumPy |
 | Dashboard | Streamlit |
 | Visualization | Plotly |
@@ -42,16 +42,16 @@ The current prototype's documented historical snapshot is:
 | Latest data date | 19 October 2026 |
 | Historical records | 816 |
 
-These figures describe the current dataset snapshot and may change as the underlying data is updated. GoldLens analyzes historical data; it does not claim to provide live market prices.
+These figures describe the documented dataset snapshot and may change as the underlying data is updated. GoldLens analyzes historical data; it does not claim to provide live market prices.
 
 ## 🔍 Analytical Workflow
 
-1. **Load** historical MCX bhavcopy CSV files.
-2. **Validate** records, dates, prices, duplicates, and contract coverage.
-3. **Analyze** price relationships across supported contracts.
-4. **Detect** unusual spread movements against historical baselines.
-5. **Explore** term structure and backtesting outputs.
-6. **Interpret** results with attention to data limitations and research assumptions.
+1. **Load:** Import historical MCX bhavcopy CSV files.
+2. **Validate:** Check records, dates, prices, duplicates, and contract coverage.
+3. **Analyze:** Examine price relationships across supported contracts.
+4. **Detect:** Identify unusual spread movements against historical baselines.
+5. **Explore:** Review term structure and backtesting outputs.
+6. **Interpret:** Evaluate findings while considering data limitations and research assumptions.
 
 ## 📁 Project Structure
 
@@ -110,7 +110,7 @@ Ensure the required raw and processed data files are present in the expected loc
 
 ### 5. Launch the dashboard
 
-From the repository root:
+From the repository root, run:
 
 ```powershell
 python -m streamlit run backend/app.py --server.port 8502
@@ -143,7 +143,9 @@ GoldLens is an educational and analytical research prototype. It is not financia
 
 **Vanshika Dutt Srivastava**
 
-[GitHub Profile](https://github.com/vds18) · [GoldLens Repository](https://github.com/vds18/GoldLens)
+- [GitHub Profile](https://github.com/vds18)
+- [GoldLens Repository](https://github.com/vds18/GoldLens)
+- [Live Dashboard](https://goldlens-bpf4to3y9kflvhw6lznksq.streamlit.app/)
 
 ---
 
